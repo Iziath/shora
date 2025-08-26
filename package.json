@@ -1,0 +1,29 @@
+{
+  "name": "quran_connect",
+  "version": "1.0.0",
+  "description": "Application web complète dédiée à la pratique religieuse des musulmans, regroupant les outils essentiels du quotidien (lecture du Coran, horaires de prière, adhkar, etc.) avec une interface moderne et personnalisable.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.18.0",
+    "mongoose": "^8.17.2",
+    "node-gtts": "^2.0.2",
+    "uuid": "^11.1.0",
+    "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
