@@ -31,7 +31,9 @@ app.get('/', (request, response) => {
 
 // Démarrer le serveur
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+// Écouter sur toutes les interfaces (0.0.0.0) pour permettre l'accès via IP locale
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Serveur démarré sur http://localhost:${PORT}`);
+  console.log(`🌐 Accessible via IP locale sur le port ${PORT}`);
 });
 

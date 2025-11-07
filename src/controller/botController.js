@@ -15,27 +15,47 @@ const voiceBot = async (req, res) => {
         }
 
         const audio_filename = `response_${Date.now()}.mp3`;
-        const audio_path = await ttsService.generate_audio(bot_reply, audio_filename);
-
-        if (!require('fs').existsSync(audio_path)) {
-            return res.status(500).json({ error: 'Erreur génération audio.' });
+        let audio_path;
+        try {
+            audio_path = await ttsService.generate_audio(bot_reply, audio_filename);
+            if (!require('fs').existsSync(audio_path)) {
+                console.warn('⚠️ Fichier audio non généré, continuons sans audio');
+                audio_path = null;
+            }
+        } catch (ttsError) {
+            console.error('⚠️ Erreur génération audio:', ttsError.message);
+            audio_path = null; // Continuer sans audio
         }
 
-        const botMessage = new Bot({
-            text_user: req.body.text,
-            text_bot: bot_reply,
-            audio_bot: `/audio/${audio_filename}`
-        });
-        await botMessage.save();
+        // Sauvegarder dans MongoDB (optionnel, ne pas bloquer si échec)
+        try {
+            const botMessage = new Bot({
+                text_user: req.body.text,
+                text_bot: bot_reply,
+                audio_bot: audio_path ? `/audio/${audio_filename}` : null
+            });
+            await botMessage.save();
+            console.log('✅ Message sauvegardé dans MongoDB');
+        } catch (dbError) {
+            console.warn('⚠️ Erreur sauvegarde MongoDB (non bloquant):', dbError.message);
+            // Continuer même si la sauvegarde échoue
+        }
 
+        // Retourner la réponse même si la sauvegarde a échoué
         res.json({
             text_user: req.body.text,
             text_bot: bot_reply,
-            audio_bot: `/audio/${audio_filename}`
+            audio_bot: audio_path ? `/audio/${audio_filename}` : null
         });
     } catch (error) {
-        console.error(`\n!!! ERREUR CRITIQUE !!!\n${error.message}`);
-        res.status(500).json({ error: 'Erreur interne du serveur.' });
+        console.error(`\n!!! ERREUR CRITIQUE !!!`);
+        console.error(`Message: ${error.message}`);
+        console.error(`Stack: ${error.stack}`);
+        console.error(`Erreur complète:`, error);
+        res.status(500).json({ 
+            error: 'Erreur interne du serveur.',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
 

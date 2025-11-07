@@ -9,6 +9,10 @@ const botSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    audio_bot: {
+        type: String,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now
