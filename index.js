@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const connectDB = require('../Quran_back/src/database/mongodb');
+const connectDB = require('./src/database/mongodb');
 const usersRoutes = require('./src/routes/users');
 const botRoutes = require('./src/routes/bot');
 const authRoutes = require('./src/routes/auth');
