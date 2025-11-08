@@ -7,8 +7,18 @@ const voiceBot = async (req, res) => {
     try {
         console.log("Route '/voice-bot/' appelée");
         console.log(`\n=== NOUVELLE REQUÊTE ===\nUtilisateur: ${req.body.text}`);
+        
+        // Récupérer le profil et l'état de conversation si fournis
+        const userProfile = req.body.profile || {};
+        const conversationState = req.body.state || 'active';
+        
+        // Construire le contexte pour le LLM
+        let contextPrompt = req.body.text;
+        if (userProfile.profession) {
+            contextPrompt += `\n[Contexte: Métier: ${userProfile.profession}, Chantier: ${userProfile.chantierType || 'non spécifié'}, Langue: ${userProfile.langue || 'français'}]`;
+        }
 
-        const bot_reply = await llmService.get_response(req.body.text);
+        const bot_reply = await llmService.get_response(contextPrompt);
         console.log(`🤖 Réponse brut du LLM : ${bot_reply}`);
         if (!bot_reply) {
             return res.status(500).json({ error: 'Erreur de génération de réponse.' });
