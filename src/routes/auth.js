@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Users = require('../models/Users');
+const User = require('../models/User'); // Utiliser le modèle User unique
 const Session = require('../models/Session');
 const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 
@@ -11,13 +11,13 @@ router.post('/register', async (request, response) => {
     }
 
     try {
-        const existingUser = await Users.findOne({ $or: [{ username }, { email }] });
+        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             return response.status(400).json({ message: 'Le nom d\'utilisateur ou l\'email existe déjà' });
         }
 
         // Créer un nouvel utilisateur (le mot de passe est haché automatiquement via le middleware pre-save)
-        const user = new Users({ username, email, password });
+        const user = new User({ username, email, password });
         await user.save();
 
         response.status(201).json({ message: 'Inscription réussie, veuillez vous connecter' });
@@ -35,7 +35,7 @@ router.post('/login', async (request, response) => {
     }
 
     try {
-        const user = await Users.findOne({ email });
+        const user = await User.findOne({ email });
         if (!user || !(await user.verifyPassword(password))) {
             return response.status(400).json({ message: 'Identifiants invalides ! Veuillez réessayer' });
         }
@@ -104,7 +104,7 @@ router.post('/refresh', async (request, response) => {
         }
 
         // Vérifier l'utilisateur
-        const user = await Users.findById(payload.userId);
+        const user = await User.findById(payload.userId);
         if (!user) {
             console.log('Utilisateur non trouvé');
             return response.status(401).json({ message: 'Utilisateur non trouvé' });
