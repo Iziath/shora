@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Reminder = require('../models/Reminder');
-const ChatbotUser = require('../models/ChatbotUser');
+const User = require('../models/User');
 
 // Récupérer les rappels en attente pour un utilisateur
 router.get('/pending/:userId', async (req, res) => {
@@ -53,7 +53,10 @@ router.post('/:reminderId/mark-sent', async (req, res) => {
 // Récupérer les rappels par nom d'utilisateur (pour le frontend)
 router.get('/user/:name', async (req, res) => {
     try {
-        const user = await ChatbotUser.findOne({ name: req.params.name.trim() });
+        const user = await User.findOne({ 
+            name: req.params.name.trim(),
+            isChatbotUser: true 
+        });
         if (!user) {
             return res.json({
                 success: true,
@@ -62,7 +65,7 @@ router.get('/user/:name', async (req, res) => {
         }
 
         const reminders = await Reminder.find({
-            userId: user._id,
+            userId: user._id.toString(),
             sent: false
         }).sort({ createdAt: -1 }).limit(5);
 

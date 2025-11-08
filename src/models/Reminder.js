@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 const reminderSchema = new mongoose.Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ChatbotUser',
+    type: String, // ID de l'utilisateur (peut être ObjectId ou String selon le contexte)
     required: true
   },
   message: {

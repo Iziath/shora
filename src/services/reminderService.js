@@ -1,5 +1,5 @@
-const ChatbotUser = require('../models/ChatbotUser');
 const Reminder = require('../models/Reminder');
+const User = require('../models/User');
 const { getRandomReminder } = require('../config/reminders');
 const axios = require('axios');
 
@@ -126,7 +126,8 @@ class ReminderService {
      */
     async sendRemindersToAllUsers() {
         try {
-            const users = await ChatbotUser.find({
+            const users = await User.find({
+                isChatbotUser: true,
                 lastVisitAt: {
                     $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Dernière visite dans les 7 derniers jours
                 }
@@ -141,7 +142,7 @@ class ReminderService {
             for (const user of users) {
                 try {
                     const reminder = new Reminder({
-                        userId: user._id,
+                        userId: user._id.toString(), // Convertir en string
                         message: randomReminder.message,
                         imageUrl: randomReminder.imageUrl,
                         sent: false
